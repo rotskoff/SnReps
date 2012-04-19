@@ -1,5 +1,0 @@
-module Matrix where
-
-data Vector a = V [a]
-newtype Matrix = M [Vector]
-
