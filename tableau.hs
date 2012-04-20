@@ -12,9 +12,26 @@ module YoungCalculus where
 import Partitions
 import Sn
 
--- youngDiagram
--- youngTableau
+newtype YoungTableau = YT [[Int]]
 
-dim :: YoungDiagram -> Int
-dim = hookLength
- 
+instance Show YoungTableau where
+    show (YoungTableau []) = ""
+    show (YoungTableau (x:xs)) = show x ++ "\n"
+
+standardTableau :: Partition -> YoungTableau
+standardTableau = YT $ tile
+
+tile :: Partition -> [[Int]]
+tile (Part []) = [[]]
+tile (Part (x:xs)) = take x [head(x)..sum(x:xs)] ++ tile xs
+
+actBy :: Permutation -> YoungTableau -> YoungTableau
+actBy (Perm a) (YT (x:xs)) = undefined -- just map the action over the lists
+
+isStandard :: YoungTableau -> Bool
+isStandard = undefined
+
+content :: YoungTableau -> Permutation -> Int
+content = undefined
+
+
