@@ -1,3 +1,10 @@
+-- Module	: Group
+-- Copyright	: (c) 2012 Grant Rotskoff
+-- License 	: GPL-3
+--
+-- Maintainer 	: gmr1887@gmail.com
+-- Stability 	: experimental
+
 module Group where
 
 

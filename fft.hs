@@ -1,3 +1,11 @@
+-- Module	: FFT (Generalized Fast Fourier Transforms)
+-- Copyright	: (c) 2012 Grant Rotskoff
+-- License 	: GPL-3
+--
+-- Maintainer 	: gmr1887@gmail.com
+-- Stability 	: experimental
+
+
 -- Cooley-Tukey Fast Fourier Transform
 module FFT where
 

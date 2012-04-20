@@ -1,4 +1,11 @@
--- (c) Grant Rotskoff, 2012
+-- Module	: PDBparse
+-- Copyright	: (c) 2012 Grant Rotskoff
+-- License 	: GPL-3
+--
+-- Maintainer 	: gmr1887@gmail.com
+-- Stability 	: experimental
+
+
 -- This module gives an implementation of the symmetric group on n letters for arbitrary n
 -- For efficiency, elements of the group are elements of the type Map Int Int, namely 
 -- they are bijections of the set [1..n] onto itself. Cycle notation is also supported. 

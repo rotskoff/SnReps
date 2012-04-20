@@ -1,3 +1,10 @@
+-- Module	: Cn (The Cyclic Group of Order n)
+-- Copyright	: (c) 2012 Grant Rotskoff
+-- License 	: GPL-3
+--
+-- Maintainer 	: gmr1887@gmail.com
+-- Stability 	: experimental
+
 -- The cyclic group of order n
 module Cn where
 
