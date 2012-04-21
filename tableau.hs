@@ -49,5 +49,9 @@ content (YT t) i = ci - ri where
 
 -- Young's Orthogonal Representation
 yor :: Int -> Partition -> [[Int]] --Irrep
-yor i p = -- actBy (trans (i,i+1)) $ standardTableau p
+yor i p = undefined
+    
+adjImage :: Int -> Partition -> YoungTableau
+adjImage i (Part p) = actBy perm (standardTableau (Part p)) where
+    perm = fromCycles ([[i,i+1]]) (sum p) -- TODO MODULUS
 

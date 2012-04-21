@@ -1,4 +1,4 @@
--- Module	: PDBparse
+-- Module	: Sn 
 -- Copyright	: (c) 2012 Grant Rotskoff
 -- License 	: GPL-3
 --
@@ -67,12 +67,21 @@ cycleThru :: Permutation -> Int -> [Int]
 cycleThru (Perm a) n = [n]++(takeWhile (/= n) $ iterate (a Map.!) (a Map.! n))
 
 -- TODO: Efficiency, elegance
-cycles :: Permutation -> [[Int]]
-cycles (Perm a) = [c1] ++ [remains] where
+toCycles :: Permutation -> [[Int]]
+toCycles (Perm a) = [c1] ++ [remains] where
     keys = fst $ unzip $ Map.toList a
     c1 = cycleThru (Perm a) (head keys)
     remains = cycleThru (Perm a) (head $ Set.toList $ 
                                  (Set.fromList keys) Set.\\ (Set.fromList c1)) 
+
+-- Specify the Group index
+fromCycles :: [[Int]] -> Int -> Permutation
+fromCycles a n = Perm $ Map.fromList $ active ++ ident  where
+    active = concatMap (\(x:xs) -> [(last xs,x)]++(makeTuples (x:xs))) a
+    ident = [(i,i)| i <- [1..n], not $ i `elem` (concat a)]
+ 
+makeTuples (x:[]) = []
+makeTuples (x:xs) = [(x,head xs)] ++ makeTuples xs  
 
 s n = map transpositions $ perms n
 
@@ -90,3 +99,6 @@ generate a gp = takeWhile (/= a) $ map (\s -> s&a) gp
 -- TODO: Efficiency, no duplicates!
 generators :: (Group a) => [a] -> [a] -> [a]
 generators elems gp = concatMap (\s -> generate s gp) elems
+
+trans :: Int -> Permutation
+trans i = undefined -- map i to i+1, i+1 to i, identity otherwise
