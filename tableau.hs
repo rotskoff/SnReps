@@ -5,33 +5,49 @@
 -- Maintainer 	: gmr1887@gmail.com
 -- Stability 	: experimental
 
-
 -- Displaying the standard tableau, various parts of the young diagram calculus
+
 module YoungCalculus where
 
 import Partitions
 import Sn
+import qualified Data.Set as Set
+import qualified Data.Map as Map
+import Data.List
+import Data.Maybe
 
 newtype YoungTableau = YT [[Int]]
 
 instance Show YoungTableau where
-    show (YoungTableau []) = ""
-    show (YoungTableau (x:xs)) = show x ++ "\n"
+    show (YT []) = ""
+    show (YT (x:xs)) = show x ++ "\n" ++ show (YT xs)
 
 standardTableau :: Partition -> YoungTableau
-standardTableau = YT $ tile
+standardTableau (Part a) = YT $ tile (Part a) [1..(sum a)]
 
-tile :: Partition -> [[Int]]
-tile (Part []) = [[]]
-tile (Part (x:xs)) = take x [head(x)..sum(x:xs)] ++ tile xs
+tile :: Partition -> [Int] -> [[Int]]
+tile (Part []) _ = [] 
+tile (Part (x:xs)) a = [take x a] ++ (tile (Part xs) (drop x a)) 
 
+-- TODO: this merits an explanation
 actBy :: Permutation -> YoungTableau -> YoungTableau
-actBy (Perm a) (YT (x:xs)) = undefined -- just map the action over the lists
+actBy (Perm a) (YT t) = YT $ map (map (a Map.!)) t  
+
+rowStandard :: YoungTableau -> Bool
+rowStandard (YT a) = (map (Set.toList . Set.fromList) a) == a 
+
+columnStandard :: YoungTableau -> Bool
+columnStandard (YT a) = (Set.toList $ Set.fromList a) == a
 
 isStandard :: YoungTableau -> Bool
-isStandard = undefined
+isStandard a = rowStandard a && columnStandard a
 
-content :: YoungTableau -> Permutation -> Int
-content = undefined
+content :: YoungTableau -> Int  -> Int
+content (YT t) i = ci - ri where
+    ri = fromJust $ findIndex (elem i) t
+    ci = fromJust $ elemIndex i (t !! ri)
 
+-- Young's Orthogonal Representation
+yor :: Int -> Partition -> [[Int]] --Irrep
+yor i p = -- actBy (trans (i,i+1)) $ standardTableau p
 
