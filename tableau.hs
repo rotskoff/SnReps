@@ -11,6 +11,8 @@ module YoungCalculus where
 
 import Partitions
 import Sn
+import Matrix
+
 import qualified Data.Set as Set
 import qualified Data.Map as Map
 import Data.List
@@ -47,11 +49,37 @@ content (YT t) i = ci - ri where
     ri = fromJust $ findIndex (elem i) t
     ci = fromJust $ elemIndex i (t !! ri)
 
+dist :: Int -> Int -> YoungTableau -> Int
+dist i j t = (content t j) - (content t i)  
+
+--TODO
 -- Young's Orthogonal Representation
 yor :: Int -> Partition -> [[Int]] --Irrep
 yor i p = undefined
-    
-adjImage :: Int -> Partition -> YoungTableau
-adjImage i (Part p) = actBy perm (standardTableau (Part p)) where
-    perm = fromCycles ([[i,i+1]]) (sum p) -- TODO MODULUS
 
+
+-- TODO
+--Columns of YOR
+yorColumn :: Int -> Int -> YoungTableau -> (Vector Double)
+yorColumn i ci (YT t)
+    | isStandard (adjImage i (YT t)) = undefined --makeSparseVec [(ci,d_tt),(___,d_it)] d
+    | otherwise = makeSparseVec [((fromIntegral ci),d_tt)] drho where
+    d_tt = 1/(fromIntegral d)
+    d_it = 1/(1-sqrt(fromIntegral d))
+    d = dist i (i+1) (adjImage i (YT t))
+    drho = dim $ (Part $ map length t)
+
+-- Action by a transposition
+adjImage :: Int -> YoungTableau -> YoungTableau
+adjImage i (YT t) = actBy perm (YT t) where
+    perm = fromCycles [[i,(i+1)`mod`(order)]] order
+    order = sum $ map length t
+
+-- Given a partition, return the list of standard tableau of the same shape
+-- TODO: Hard code certain shapes, so the search terminates 
+-- Length of list is equal to the dimension of the rep! Terminate if hookLength is reached!
+-- Write as a list comprehension
+standard :: Partition -> [YoungTableau]
+standard (Part a) = filter isStandard $ map (\i -> actBy (s n !! (i-1)) (standardTableau (Part a))) ([1..order]) where
+    n = sum a
+    order = product [1..n]
