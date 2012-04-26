@@ -102,3 +102,15 @@ generators elems gp = concatMap (\s -> generate s gp) elems
 
 trans :: Int -> Permutation
 trans i = undefined -- map i to i+1, i+1 to i, identity otherwise
+
+
+-- Factorizations for the FFT
+-- Young's Orthogonal Representation is built recursively using
+-- adjacent transpositions. We can easily factor a contiguous
+-- cycle into adjacent transpositions. Moreover, we can factor any
+-- permutation into a product of disjoint cycles. 
+
+contigToTrans :: [[Int]] -> [[Int]]
+contigToTrans [xs] = [[i,i+1]| i <- (init xs)]
+
+   

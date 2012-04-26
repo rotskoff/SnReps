@@ -29,3 +29,7 @@ pad :: RealPolynomial -> RealPolynomial
 pad (P a)
     | length (a) `elem` (powersof2) = (P a)
     | otherwise = undefined
+
+
+factorContiguous :: [Int] -> [[Int]]
+factorContiguous a = [[i,i+1]| i <- a]

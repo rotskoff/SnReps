@@ -18,7 +18,7 @@ import qualified Data.Map as Map
 import Data.List
 import Data.Maybe
 
-newtype YoungTableau = YT [[Int]]
+newtype YoungTableau = YT [[Int]] deriving (Eq)
 
 instance Show YoungTableau where
     show (YT []) = ""
@@ -39,7 +39,9 @@ rowStandard :: YoungTableau -> Bool
 rowStandard (YT a) = (map (Set.toList . Set.fromList) a) == a 
 
 columnStandard :: YoungTableau -> Bool
-columnStandard (YT a) = (Set.toList $ Set.fromList a) == a
+columnStandard (YT []) = True
+columnStandard (YT a) = rowStandard (YT $ [map (flip (!!) 0) a]) && columnStandard remains where
+    remains = YT $ filter (not . null) $ map tail a
 
 isStandard :: YoungTableau -> Bool
 isStandard a = rowStandard a && columnStandard a
@@ -54,25 +56,32 @@ dist i j t = (content t j) - (content t i)
 
 --TODO
 -- Young's Orthogonal Representation
-yor :: Int -> Partition -> [[Int]] --Irrep
-yor i p = undefined
+yor :: Permutation -> Partition -> [[Int]] --Irrep
+yor tau p = undefined
 
 
--- TODO
---Columns of YOR
-yorColumn :: Int -> Int -> YoungTableau -> (Vector Double)
-yorColumn i ci (YT t)
-    | isStandard (adjImage i (YT t)) = undefined --makeSparseVec [(ci,d_tt),(___,d_it)] d
+yorSimple :: Int -> Partition -> [[Double]]
+yorSimple i (Part p) = [fromVec $ yorColumn [i,i+1] (fromIntegral ci) t |
+                   (ci,t) <- zip [0..((dim (Part p))-1)] (standard $ Part p)] where
+    order = sum p
+
+yorColumn :: [Int] -> Int -> YoungTableau -> (Vector Double)
+yorColumn [i,j] ci (YT t)
+    | isStandard tauT = makeSparseVec [(fromIntegral ci,d_tt),(tauIndex,d_it)] drho
     | otherwise = makeSparseVec [((fromIntegral ci),d_tt)] drho where
     d_tt = 1/(fromIntegral d)
-    d_it = 1/(1-sqrt(fromIntegral d))
-    d = dist i (i+1) (adjImage i (YT t))
+    d_it = 1/sqrt(1-1/(fromIntegral d)^2)
+    d = dist i j (YT t)
     drho = dim $ (Part $ map length t)
+    tauT = adjImage i (YT t)
+    tauIndex = fromIntegral $ fromJust $ elemIndex tauT (standard (Part p))
+    p = map length t
+                  
 
 -- Action by a transposition
 adjImage :: Int -> YoungTableau -> YoungTableau
 adjImage i (YT t) = actBy perm (YT t) where
-    perm = fromCycles [[i,(i+1)`mod`(order)]] order
+    perm = fromCycles [[i,(i+1)]] order
     order = sum $ map length t
 
 -- Given a partition, return the list of standard tableau of the same shape
@@ -80,6 +89,6 @@ adjImage i (YT t) = actBy perm (YT t) where
 -- Length of list is equal to the dimension of the rep! Terminate if hookLength is reached!
 -- Write as a list comprehension
 standard :: Partition -> [YoungTableau]
-standard (Part a) = filter isStandard $ map (\i -> actBy (s n !! (i-1)) (standardTableau (Part a))) ([1..order]) where
+standard (Part a) = take (fromIntegral $ dim $ Part a) $ filter isStandard $ map (\i -> actBy (s n !! (i-1)) (standardTableau (Part a))) ([1..order]) where
     n = sum a
     order = product [1..n]
