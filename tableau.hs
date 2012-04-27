@@ -56,8 +56,9 @@ dist i j t = (content t j) - (content t i)
 
 --TODO
 -- Young's Orthogonal Representation
-yor :: Permutation -> Partition -> [[Int]] --Irrep
-yor tau p = undefined
+-- List of Matrices... multiply them
+yor :: Permutation -> Partition -> [[[Double]]] --Irrep
+yor tau p = map (\i -> yorSimple i p) (map head $ toAdjacent tau) 
 
 
 yorSimple :: Int -> Partition -> [[Double]]

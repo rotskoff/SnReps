@@ -118,5 +118,6 @@ transToAdj :: [Int] -> [[Int]]
 transToAdj [i,j] = undo ++ (reverse $ init undo) where 
     undo = [[k,k+1]| k<-[i..j-1]]  
 
-
+toAdjacent :: Permutation -> [[Int]]
+toAdjacent = (concatMap transToAdj) . toTrans . toCycles 
    
