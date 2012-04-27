@@ -77,7 +77,6 @@ yorColumn [i,j] ci (YT t)
     tauIndex = fromIntegral $ fromJust $ elemIndex tauT (standard (Part p))
     p = map length t
                   
-
 -- Action by a transposition
 adjImage :: Int -> YoungTableau -> YoungTableau
 adjImage i (YT t) = actBy perm (YT t) where

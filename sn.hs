@@ -66,17 +66,19 @@ nontrivial (Perm a) = Perm $ Map.fromList $ filter (\(a,b) -> a /= b) (Map.toLis
 cycleThru :: Permutation -> Int -> [Int]
 cycleThru (Perm a) n = [n]++(takeWhile (/= n) $ iterate (a Map.!) (a Map.! n))
 
--- TODO: Efficiency, elegance
 toCycles :: Permutation -> [[Int]]
-toCycles (Perm a) = [c1] ++ [remains] where
+toCycles (Perm a)
+    | keys == [] = []
+    | otherwise = [c1] ++ toCycles (Perm $ Map.fromList remains) where
     keys = fst $ unzip $ Map.toList a
     c1 = cycleThru (Perm a) (head keys)
-    remains = cycleThru (Perm a) (head $ Set.toList $ 
-                                 (Set.fromList keys) Set.\\ (Set.fromList c1)) 
+    remains = [(x,(a Map.! x))|x <- keys, not $ x `elem` c1]
 
 -- Specify the Group index
+-- Unfortunately infinite maps don't exist
+-- TODO: Trie data structures
 fromCycles :: [[Int]] -> Int -> Permutation
-fromCycles a n = Perm $ Map.fromList $ active ++ ident  where
+fromCycles a n = Perm $ Map.fromList $ active ++ ident where
     active = concatMap (\(x:xs) -> [(last xs,x)]++(makeTuples (x:xs))) a
     ident = [(i,i)| i <- [1..n], not $ i `elem` (concat a)]
  
@@ -100,17 +102,21 @@ generate a gp = takeWhile (/= a) $ map (\s -> s&a) gp
 generators :: (Group a) => [a] -> [a] -> [a]
 generators elems gp = concatMap (\s -> generate s gp) elems
 
-trans :: Int -> Permutation
-trans i = undefined -- map i to i+1, i+1 to i, identity otherwise
-
-
 -- Factorizations for the FFT
 -- Young's Orthogonal Representation is built recursively using
 -- adjacent transpositions. We can easily factor a contiguous
--- cycle into adjacent transpositions. Moreover, we can factor any
--- permutation into a product of disjoint cycles. 
+-- cycle into adjacent transpositions. 
 
-contigToTrans :: [[Int]] -> [[Int]]
-contigToTrans [xs] = [[i,i+1]| i <- (init xs)]
+test :: [Int] -> [[Int]]
+test [] = [] 
+test (x:xs) = reverse $ map (\i -> [x,i]) xs
+
+toTrans :: [[Int]] -> [[Int]]
+toTrans cycs = concatMap test cycs    
+
+transToAdj :: [Int] -> [[Int]]
+transToAdj [i,j] = undo ++ (reverse $ init undo) where 
+    undo = [[k,k+1]| k<-[i..j-1]]  
+
 
    
