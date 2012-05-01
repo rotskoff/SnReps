@@ -7,7 +7,7 @@
 
 -- Displaying the standard tableau, various parts of the young diagram calculus
 
-module YoungCalculus where
+module Tableau where
 
 import Partitions
 import Sn

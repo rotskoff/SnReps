@@ -5,6 +5,9 @@
 
 module Partitions where
 
+import Data.List
+import qualified Data.Set as Set
+
 newtype Partition = Part [Int] deriving (Show, Eq, Ord)
 
 table (Part (x:[])) = show $ replicate x '*'
@@ -12,10 +15,21 @@ table (Part (x:xs)) = (show $ replicate x '*') ++ "\n" ++ (table (Part xs))
 
 partitions :: Int -> [Partition]
 partitions 0 = [Part []]
-partitions n = [ Part (i:xs) | i <- [1..n], (Part xs) <- partitions (n-i),
+partitions n = [Part (i:xs)| i <- [1..n], (Part xs) <- partitions (n-i),
                         null xs || i >= (head xs)] 
 
--- For a list of ints in descending order
+-- Restriction of a representation to S_{n-1}
+res :: Partition -> [Partition]
+res (Part p) = map Part $ filter (not . null) $ map (\i -> listMod i p) [1..length(p)] where
+
+-- Just a helper function for restriction
+listMod :: Int -> [Int] -> [Int]
+listMod i p
+   | (reverse $ sort res) == res = filter (/=0) res
+   | otherwise = [] where 
+   ls = splitAt i p
+   res = (init $ fst ls)++[(last $ fst ls)-1]++(snd ls) 
+
 
 hooks :: [Int] -> [Int]
 hooks [] = []

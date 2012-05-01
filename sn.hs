@@ -19,7 +19,7 @@ import Group
 
 -- A permutation is represented by a list of integers
 newtype Permutation = Perm (Map.Map Int Int)
-    deriving (Eq)
+    deriving (Eq,Ord)
 
 instance Show Permutation where
    show (Perm a) = "{ "++(spaces $ Map.toList a)++"}"
@@ -120,4 +120,6 @@ transToAdj [i,j] = undo ++ (reverse $ init undo) where
 
 toAdjacent :: Permutation -> [[Int]]
 toAdjacent = (concatMap transToAdj) . toTrans . toCycles 
-   
+
+adaptedChain :: Permutation -> [[Int]]
+adaptedChain a = undefined 

@@ -9,6 +9,18 @@
 -- Cooley-Tukey Fast Fourier Transform
 module FFT where
 
+import Sn
+import Partitions
+import Tableau
+import Matrix
+import Functions
+
+
+
+
+{-
+Just some experiments with the C-T FFT...
+
 data Complex = C {real :: Double, imaginary :: Double} deriving (Eq)
 instance Show Complex where
     show (C {real=a,imaginary=b}) = (show a) ++ " + " ++ (show b)++"i"
@@ -33,3 +45,4 @@ pad (P a)
 
 factorContiguous :: [Int] -> [[Int]]
 factorContiguous a = [[i,i+1]| i <- a]
+-}
