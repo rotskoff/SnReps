@@ -12,6 +12,7 @@
 
 module Sn where
 
+import Prelude hiding (id)
 import qualified Data.Map as Map
 import qualified Data.IntSet as Set
 import Group
@@ -75,11 +76,11 @@ toCycles (Perm a)
     remains = [(x,(a Map.! x))|x <- keys, not $ x `elem` c1]
 
 -- Specify the Group index
--- Unfortunately infinite maps don't exist
--- TODO: Trie data structures
 fromCycles :: [[Int]] -> Int -> Permutation
 fromCycles a n = Perm $ Map.fromList $ active ++ ident where
-    active = concatMap (\(x:xs) -> [(last xs,x)]++(makeTuples (x:xs))) a
+    active
+        | (length $ concat a) == 1 = [(1,1)]
+        | otherwise = concatMap (\(x:xs) -> [(last xs,x)]++(makeTuples (x:xs))) a
     ident = [(i,i)| i <- [1..n], not $ i `elem` (concat a)]
  
 makeTuples (x:[]) = []
@@ -122,4 +123,9 @@ toAdjacent :: Permutation -> [[Int]]
 toAdjacent = (concatMap transToAdj) . toTrans . toCycles 
 
 adaptedChain :: Permutation -> [[Int]]
-adaptedChain a = undefined 
+adaptedChain (Perm p) 
+    | n == 1 = []
+    | otherwise = o' ++ (adaptedChain $ (inv $ fromCycles o' n)&(Perm p')) where 
+    o' = [[(p Map.! n)..n]]
+    n = length $ Map.toList p
+    p' = Map.fromList $ init $ Map.toList p
