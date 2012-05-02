@@ -42,7 +42,7 @@ image :: Permutation -> [Int]
 image (Perm a) = snd $ unzip $ Map.toList a
 
 compose :: Permutation -> Permutation -> Permutation
-compose (Perm a) b = transpositions $ map (a Map.!) (image b)
+compose (Perm a) b = transpositions $ map (a `at`) (image b)
 
 invert :: Permutation -> Permutation
 invert (Perm a) = Perm $ Map.fromList $ zip (image (Perm a)) [1..length(Map.toList a)]
@@ -73,7 +73,7 @@ toCycles (Perm a)
     | otherwise = [c1] ++ toCycles (Perm $ Map.fromList remains) where
     keys = fst $ unzip $ Map.toList a
     c1 = cycleThru (Perm a) (head keys)
-    remains = [(x,(a Map.! x))|x <- keys, not $ x `elem` c1]
+    remains = [(x,(a `at` x))|x <- keys, not $ x `elem` c1]
 
 -- Specify the Group index
 fromCycles :: [[Int]] -> Int -> Permutation
@@ -122,10 +122,20 @@ transToAdj [i,j] = undo ++ (reverse $ init undo) where
 toAdjacent :: Permutation -> [[Int]]
 toAdjacent = (concatMap transToAdj) . toTrans . toCycles 
 
+at = (Map.!)
+
+
+adapt :: Permutation -> (Permutation,[[Int]])
+adapt (Perm p) = (inv(fromCycles o' n)&(Perm p'),o') where
+    o' = [[(p `at`  n)..n]]
+    n = length $ Map.toList p
+    p' = Map.fromList $ init $ Map.toList p
+
 adaptedChain :: Permutation -> [[Int]]
 adaptedChain (Perm p) 
     | n == 1 = []
-    | otherwise = o' ++ (adaptedChain $ (inv $ fromCycles o' n)&(Perm p')) where 
-    o' = [[(p Map.! n)..n]]
+    | otherwise = cyc ++ step  
+    where
+    cyc = snd $ adapt $ Perm p
+    step = adaptedChain $ fst $ adapt $ Perm p
     n = length $ Map.toList p
-    p' = Map.fromList $ init $ Map.toList p

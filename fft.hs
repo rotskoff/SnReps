@@ -15,6 +15,12 @@ import Tableau
 import Matrix
 import Functions
 
+-- Untyped for the moment
+-- Sum i = 1 .. n
+fft f l = sum  
+    prefactor = map (\i -> yor l [[1..i]]) [1..n]
+    fft adapt f l
+     
 
 
 
