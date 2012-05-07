@@ -56,10 +56,10 @@ dist i j t = (content t j) - (content t i)
 
 --TODO
 -- Young's Orthogonal Representation
--- List of Matrices... multiply them
-yor :: Permutation -> Partition -> [[[Double]]] --Irrep
-yor tau p = map (\i -> yorSimple i p) (map head $ toAdjacent tau) 
+-- List of Matrices... multiply them 
 
+yor :: Permutation -> Partition -> [[Double]] --Irrep
+yor tau p = foldr1 multColumnMatrix $ map (\i -> yorSimple i p) (map head $ toAdjacent tau) 
 
 yorSimple :: Int -> Partition -> [[Double]]
 yorSimple i (Part p) = [fromVec $ yorColumn [i,i+1] (fromIntegral ci) t |
@@ -85,9 +85,6 @@ adjImage i (YT t) = actBy perm (YT t) where
     order = sum $ map length t
 
 -- Given a partition, return the list of standard tableau of the same shape
--- TODO: Hard code certain shapes, so the search terminates 
--- Length of list is equal to the dimension of the rep! Terminate if hookLength is reached!
--- Write as a list comprehension
 standard :: Partition -> [YoungTableau]
 standard (Part a) = take (fromIntegral $ dim $ Part a) $ filter isStandard $ map (\i -> actBy (s n !! (i-1)) (standardTableau (Part a))) ([1..order]) where
     n = sum a

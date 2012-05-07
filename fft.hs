@@ -14,12 +14,15 @@ import Partitions
 import Tableau
 import Matrix
 import Functions
+import qualified Data.Map as Map 
 
--- Untyped for the moment
+-- Untyped for the moment:
 -- Sum i = 1 .. n
-fft f l = sum  
-    prefactor = map (\i -> yor l [[1..i]]) [1..n]
-    fft adapt f l
+-- Data Structures!
+
+fft f _ (Part [1]) = eval f (Perm $ Map.fromList [(1,1)]) 
+fft f tau l = sum $ fftFactors where
+    fftFactors = [ (yor (i..n) l) (fft f' (adapt tau) l) | i <-[f1..n]] 
      
 
 

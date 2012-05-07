@@ -124,7 +124,6 @@ toAdjacent = (concatMap transToAdj) . toTrans . toCycles
 
 at = (Map.!)
 
-
 adapt :: Permutation -> (Permutation,[[Int]])
 adapt (Perm p) = (inv(fromCycles o' n)&(Perm p'),o') where
     o' = [[(p `at`  n)..n]]
