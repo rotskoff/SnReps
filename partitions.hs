@@ -13,6 +13,7 @@ newtype Partition = Part [Int] deriving (Show, Eq, Ord)
 table (Part (x:[])) = show $ replicate x '*'
 table (Part (x:xs)) = (show $ replicate x '*') ++ "\n" ++ (table (Part xs)) 
 
+-- Produce the list of all partitions of n (Warning: this does not scale well!)
 partitions :: Int -> [Partition]
 partitions 0 = [Part []]
 partitions n = [Part (i:xs)| i <- [1..n], (Part xs) <- partitions (n-i),
@@ -30,7 +31,7 @@ listMod i p
    ls = splitAt i p
    res = (init $ fst ls)++[(last $ fst ls)-1]++(snd ls) 
 
-
+-- Produce the list of hook lengths for a partition
 hooks :: [Int] -> [Int]
 hooks [] = []
 hooks a = (hookList a) ++ (hooks dropColumn) where
@@ -38,6 +39,6 @@ hooks a = (hookList a) ++ (hooks dropColumn) where
     hookList xs = [i+(xs!!i)|i<-[0..((length xs)-1)]]
 
 -- Calculate the dimension of a representation, via its Young Diagram
--- We convert to arbitrary precision numbers because growth rates are fast. 
+-- We convert to arbitrary precision integers because growth rates are fast. 
 dim :: Partition -> Integer
 dim (Part a) = (product $ map toInteger [1..(sum a)]) `div` (product $ map toInteger (hooks $ reverse a))

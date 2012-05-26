@@ -31,7 +31,6 @@ tile :: Partition -> [Int] -> [[Int]]
 tile (Part []) _ = [] 
 tile (Part (x:xs)) a = [take x a] ++ (tile (Part xs) (drop x a)) 
 
--- TODO: this merits an explanation
 actBy :: Permutation -> YoungTableau -> YoungTableau
 actBy (Perm a) (YT t) = YT $ map (map (a Map.!)) t  
 
@@ -43,23 +42,25 @@ columnStandard (YT []) = True
 columnStandard (YT a) = rowStandard (YT $ [map (flip (!!) 0) a]) && columnStandard remains where
     remains = YT $ filter (not . null) $ map tail a
 
+-- A filter for standard tableau
 isStandard :: YoungTableau -> Bool
 isStandard a = rowStandard a && columnStandard a
 
+-- Distance is defined in terms of content
 content :: YoungTableau -> Int  -> Int
 content (YT t) i = ci - ri where
     ri = fromJust $ findIndex (elem i) t
     ci = fromJust $ elemIndex i (t !! ri)
 
+-- The distance between entries in Tableaux
 dist :: Int -> Int -> YoungTableau -> Int
 dist i j t = (content t j) - (content t i)  
 
---TODO
 -- Young's Orthogonal Representation
--- List of Matrices... multiply them 
-
 yor :: Permutation -> Partition -> [[Double]] --Irrep
-yor tau p = foldr1 multColumnMatrix $ map (\i -> yorSimple i p) (map head $ toAdjacent tau) 
+yor tau p
+    | tau == (s (size tau) !! 0) = identityMatrix (dim p)
+    | otherwise = foldr1 multColumnMatrix $ map (\i -> yorSimple i p) (map head $ toAdjacent tau) 
 
 yorSimple :: Int -> Partition -> [[Double]]
 yorSimple i (Part p) = [fromVec $ yorColumn [i,i+1] (fromIntegral ci) t |

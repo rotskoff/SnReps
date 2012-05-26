@@ -3,6 +3,7 @@ module Functions where
 
 import Sn
 import Data.Complex
+import System.Random
 import qualified Data.Map as Map
 
 newtype SnMap = F (Map.Map Permutation (Complex Double))
@@ -26,3 +27,5 @@ add (F f) (F g)
     | otherwise = F $ Map.fromList $ zip (k f) vs where
     vs = zipWith (+) (v f) (v g)
 
+randomf :: Int -> SnMap
+randomf n = undefined

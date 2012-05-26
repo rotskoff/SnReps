@@ -5,7 +5,6 @@
 -- Maintainer 	: gmr1887@gmail.com
 -- Stability 	: experimental
 
-
 -- This module gives an implementation of the symmetric group on n letters for arbitrary n
 -- For efficiency, elements of the group are elements of the type Map Int Int, namely 
 -- they are bijections of the set [1..n] onto itself. Cycle notation is also supported. 
@@ -18,7 +17,7 @@ import qualified Data.IntSet as Set
 import Group
 
 
--- A permutation is represented by a list of integers
+-- Permutations are taken to be maps, which allows for efficient composition.
 newtype Permutation = Perm (Map.Map Int Int)
     deriving (Eq,Ord)
 
@@ -88,10 +87,16 @@ makeTuples (x:xs) = [(x,head xs)] ++ makeTuples xs
 
 s n = map transpositions $ perms n
 
+
+-- We will represent Sn as a group class. 
+
 instance Group Permutation where
    id n = transpositions [1..n]
    (&) = compose
    inv = invert
+
+size :: Permutation -> Int
+size (Perm p) = length $ Map.toList p
 
 conjugateBy :: (Group a) => a -> a -> a
 conjugateBy g h = (inv h)&g&h
@@ -122,6 +127,7 @@ transToAdj [i,j] = undo ++ (reverse $ init undo) where
 toAdjacent :: Permutation -> [[Int]]
 toAdjacent = (concatMap transToAdj) . toTrans . toCycles 
 
+-- Just for clarity and concision
 at = (Map.!)
 
 adapt :: Permutation -> (Permutation,[[Int]])

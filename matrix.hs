@@ -41,6 +41,9 @@ makeSparseVec kvs n = V $ Map.fromList $ kvs ++ [(i,0)|i<-[0..n-1], not $ i `ele
 dot :: (Num a) => [a] -> [a] -> a
 dot a b = sum $ zipWith (*) a b
 
+identityMatrix :: (Num a) => Integer -> [[a]]
+identityMatrix n = [fromVec $ makeSparseVec [(i,1)] n | i <- [0..n-1]] 
+
 -- Column vectors, as in Young's Orthogonal Representation
 multColumnMatrix :: (Num a) => [[a]] -> [[a]] -> [[a]]
 multColumnMatrix m0 m1 = fromRows $ [row i|i<-[0..length(m1)-1]] where 
