@@ -76,7 +76,9 @@ toCycles (Perm a)
 
 -- Specify the Group index
 fromCycles :: [[Int]] -> Int -> Permutation
-fromCycles a n = Perm $ Map.fromList $ active ++ ident where
+fromCycles a n
+    | a == [[n]] = transpositions [1..n] 
+    | otherwise = Perm $ Map.fromList $ active ++ ident where
     active
         | (length $ concat a) == 1 = [(1,1)]
         | otherwise = concatMap (\(x:xs) -> [(last xs,x)]++(makeTuples (x:xs))) a
@@ -144,3 +146,6 @@ adaptedChain (Perm p)
     cyc = snd $ adapt $ Perm p
     step = adaptedChain $ fst $ adapt $ Perm p
     n = length $ Map.toList p
+
+embed :: Int -> [Permutation]
+embed n = map (\(Perm p) -> Perm $ Map.fromList $ (Map.toList p)++[(n+1,n+1)]) (s n)

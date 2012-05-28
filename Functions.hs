@@ -2,23 +2,27 @@
 module Functions where
 
 import Sn
+import Group
 import Data.Complex
 import System.Random
 import qualified Data.Map as Map
 
-newtype SnMap = F (Map.Map Permutation (Complex Double))
+newtype SnMap = F (Map.Map Permutation Double)
     deriving(Show)
 
 identity :: Int -> SnMap
 identity n = F $ Map.fromList $ [(p,1)|p<-(s n)]
 
-eval :: SnMap -> Permutation -> (Complex Double)
+eval :: SnMap -> Permutation -> Double
 eval (F f) p = f Map.! p  
 
 k = Map.keys
 v = Map.elems
 
-scale :: (Complex Double) -> SnMap -> SnMap
+fDim :: SnMap -> Int
+fDim (F f) = length (k f)
+
+scale :: Double -> SnMap -> SnMap
 scale a (F f) = F $ Map.fromList $ zip (k f) (map (* a) (v f)) 
 
 add :: SnMap -> SnMap -> SnMap
@@ -27,5 +31,15 @@ add (F f) (F g)
     | otherwise = F $ Map.fromList $ zip (k f) vs where
     vs = zipWith (+) (v f) (v g)
 
-randomf :: Int -> SnMap
-randomf n = undefined
+randomF :: Int -> SnMap
+randomF n = undefined
+
+-- A key step to the recursion of the Fourier Transform is the adaptation of
+-- SnMaps to the subgroups of Sn. Essentially, this is a precise way of 
+-- restricting the function to subgroups.
+-- We build a function on the subgroup in terms of its values on the larger group via
+-- a factorization into contiguous cycles.  
+mapAdapt :: SnMap -> Permutation -> SnMap
+mapAdapt (F f) o = F $ Map.fromList $ zip (s n) [eval (F f) ks| ks <- k'] where
+    n = (size o) - 1
+    k' = map ((&) o) (embed n)

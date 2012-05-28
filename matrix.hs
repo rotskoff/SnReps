@@ -50,5 +50,17 @@ multColumnMatrix m0 m1 = fromRows $ [row i|i<-[0..length(m1)-1]] where
     row i = [dot (m0row i) c1 | c1 <- m1]
     m0row i = map (!! i) m0
 
+mScale :: (Num a) => a -> [[a]] -> [[a]]
+mScale a m0 = map (map (* a)) m0 
+
+mTimes :: (Num a) => [[a]] -> [[a]] -> [[a]]
+mTimes m0 m1 = [row i|i<-[0..length(m1)-1]] where
+    row i = [dot (m0 !! i) (m1col j) | j <- [0..length(m1)-1]]
+    m1col i = map (!! i) m1
+
 fromRows :: [[a]] -> [[a]]
-fromRows  m = map (\i -> m !! i) [0..length(m)-1]  
+fromRows  m = map (\i -> m !! i) [0..length(m)-1]
+
+mSum :: (Num a) => [[a]] -> [[a]] -> [[a]]
+mSum m0 m1 = map (\r -> (zipWith (+)) (fst r) (snd r)) m' where
+    m' = zip m0 m1

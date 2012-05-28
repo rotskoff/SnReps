@@ -5,8 +5,8 @@
 -- Maintainer 	: gmr1887@gmail.com
 -- Stability 	: experimental
 
+-- Based on Clausen's Fourier Transform on Symmetric Groups
 
--- Cooley-Tukey Fast Fourier Transform
 module FFT where
 
 import Sn
@@ -16,35 +16,25 @@ import Matrix
 import Functions
 import qualified Data.Map as Map
 import Data.Complex
-import System.Random
 
--- Take an SnMap and return a function from a partition to a sum of matrices
-
-rand :: IO Double
-rand = do
-  x <- randomRIO (-1,1)
-  return (x :: Double)
-
-
-order :: Partition -> Int
-order (Part l) = sum l
-
--- Need to return a coefficient matrix and an iterable type
--- Data structure for iteration.
-
-fullFFT :: SnMap -> [(Partition,[[Double]])]
-fullFFT = undefined
 
 -- A partially applicable Fourier transform!
--- We use a factorization of into a product of contiguous cycles to execute the recursion.
+-- We use a factorization of into a product of contiguous cycles to execute the recursion
+-- Need to pass along the original function
+-- Major testing/debugging remains a TODO.
 fft :: SnMap -> Partition -> [[Double]]
-fft f (Part [1]) = [[eval f (Perm $ Map.fromList [(1,1)])]] 
-fft f l = -- Recursive Step
+fft (F f) l
+    | (length $ Map.toList f) == 1 = mScale (snd $ head $ Map.toList f) (identityMatrix (dim l))
+    | otherwise = foldr1 mSum [ mTimes (yor (o i) l) (fft (mapAdapt (F f) (o i)) l) | i <- [1..n]] where
+    o i = fromCycles [[i..n]] n 
+    n = factInv $ fDim (F f)
 
 
-directSum :: (Num a) => [[a]] -> [[a]] -> [[a]]
-directSum m1 m2 = block1 ++ block2 where
-    block1 = map (++ zeros1) m1
-    block2 = map (zeros2 ++) m2
-    zeros1 = replicate (length m2) 0
-    zeros2 = replicate (length m1) 0
+factInv :: Int -> Int
+factInv x = case x of
+              1 -> 1
+              2 -> 2
+              6 -> 3
+              24 -> 4
+              120 -> 5
+              720 -> 6
