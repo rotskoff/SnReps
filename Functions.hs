@@ -4,6 +4,7 @@ module Functions where
 import Sn
 import Group
 import Data.Complex
+import Data.List (unfoldr)
 import System.Random
 import qualified Data.Map as Map
 
@@ -31,8 +32,15 @@ add (F f) (F g)
     | otherwise = F $ Map.fromList $ zip (k f) vs where
     vs = zipWith (+) (v f) (v g)
 
-randomF :: Int -> SnMap
-randomF n = undefined
+randomls :: Int -> StdGen -> [Double]
+randomls n = take n . unfoldr (Just . randomR (0,1))
+
+randomF :: Int -> IO SnMap
+randomF n = do
+  seed <- newStdGen
+  let ks = s n
+  let vs = randomls (length ks) seed
+  return $ F $ Map.fromList $ zip ks vs
 
 -- A key step to the recursion of the Fourier Transform is the adaptation of
 -- SnMaps to the subgroups of Sn. Essentially, this is a precise way of 

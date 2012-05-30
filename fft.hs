@@ -30,6 +30,15 @@ fft (F f) l
     n = factInv $ fDim (F f)
 
 
+randomFFT :: Partition -> (IO [[Double]])
+randomFFT (Part l) = (randomF n) >>= (\s -> return (fft s (Part l))) where
+    n = sum l
+
+
+
+
+
+-- Temp. / Inelegant
 factInv :: Int -> Int
 factInv x = case x of
               1 -> 1
