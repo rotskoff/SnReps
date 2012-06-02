@@ -34,7 +34,14 @@ randomFFT :: Partition -> (IO [[Double]])
 randomFFT (Part l) = (randomF n) >>= (\s -> return (fft s (Part l))) where
     n = sum l
 
+--TODO
 
+plancherel :: SnMap -> SnMap -> Double
+plancherel = undefined
+
+--Test Fourier Transform w/ convolution / product
+convolve :: SnMap -> SnMap -> SnMap
+convolve = undefined 
 
 
 
@@ -47,3 +54,4 @@ factInv x = case x of
               24 -> 4
               120 -> 5
               720 -> 6
+              4060 -> 7
