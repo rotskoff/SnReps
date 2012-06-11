@@ -22,16 +22,22 @@ mult gp a b = (a * b) `mod` (order gp)
 invert :: CyclicGroup -> Int -> Int
 invert gp a = (lcm a (order gp)) `mod` (order gp) 
 
-
-instance Group CyclicGroup where
-    id = undefined 
-    (&) = undefined
-    inv = undefined
-
 c :: Int -> CyclicGroup
 c n = C {order = n, elems = [1..n-1]}
 
-primitives :: CyclicGroup -> Int
-primitives = undefined
+--Those elements which generate the group.
+primitives :: CyclicGroup -> [Int]
+primitives grp = filter (\l -> relPrime (order grp) l) (elems grp)
+
+-- GCD's in the Prelude?
+-- TODO take a look at it, make sure it's good.
+relPrime :: Int -> Int -> Bool
+relPrime x y = (gcd x y) == 1
+
+generate :: Int -> CyclicGroup -> CyclicGroup
+generate a grp = C { order = (order grp), elems = ([a] ++ (takeWhile (/= a) $ tail $ iterate (mult grp a) a))}
+
+subgroups :: CyclicGroup -> [CyclicGroup]
+subgroups grp = map (\l -> generate l grp) (elems grp) 
 
 
